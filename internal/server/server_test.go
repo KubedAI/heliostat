@@ -131,6 +131,12 @@ func TestStaticUI(t *testing.T) {
 	if rec := get(h, "GET", "/jobs/", nil); rec.Code != 308 || rec.Header().Get("Location") != "/jobs" {
 		t.Errorf("trailing slash: %d %s", rec.Code, rec.Header().Get("Location"))
 	}
+	// Paths a browser would read as another host must never produce a redirect (open redirect).
+	for _, p := range []string{"/\\evil.com/", "/%5Cevil.com/", "/%09/evil.com/", "/%0d%0a/evil.com/"} {
+		if rec := get(h, "GET", p, nil); rec.Code == http.StatusPermanentRedirect || rec.Header().Get("Location") != "" {
+			t.Errorf("%s redirected to %q", p, rec.Header().Get("Location"))
+		}
+	}
 	if rec := get(h, "GET", "/_next/static/chunk.js", nil); !strings.Contains(rec.Header().Get("Cache-Control"), "immutable") {
 		t.Errorf("asset caching: %s", rec.Header().Get("Cache-Control"))
 	}

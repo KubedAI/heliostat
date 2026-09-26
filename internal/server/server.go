@@ -288,7 +288,11 @@ func (s *Server) historyDashboard(w http.ResponseWriter, r *http.Request) {
 func (s *Server) static(w http.ResponseWriter, r *http.Request) {
 	p := r.URL.Path
 	if p != "/" && strings.HasSuffix(p, "/") {
-		http.Redirect(w, r, strings.TrimRight(p, "/"), http.StatusPermanentRedirect)
+		if target, ok := localRedirectTarget(p); ok {
+			http.Redirect(w, r, target, http.StatusPermanentRedirect)
+		} else {
+			http.NotFound(w, r)
+		}
 		return
 	}
 	clean := strings.TrimPrefix(path.Clean(p), "/")
@@ -308,6 +312,22 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request) {
 		}
 		http.NotFound(w, r)
 	}
+}
+
+// localRedirectTarget strips trailing slashes from a UI path, refusing anything a browser could
+// read as a different host: backslashes and control characters ("/\evil.com" and "/\t/evil.com"
+// both become "//evil.com" in browsers), or a leading "//".
+func localRedirectTarget(p string) (string, bool) {
+	target := strings.TrimRight(p, "/")
+	if target == "" || !strings.HasPrefix(target, "/") || strings.HasPrefix(target, "//") {
+		return "", false
+	}
+	for _, r := range target {
+		if r == '\\' || r < 0x20 || r == 0x7f {
+			return "", false
+		}
+	}
+	return target, true
 }
 
 func (s *Server) serveFile(w http.ResponseWriter, r *http.Request, name string, status int) bool {
