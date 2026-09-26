@@ -12,10 +12,7 @@ A read-only console for Ray jobs, Ray clusters, and Ray Serve endpoints across K
 
 A heliostat is a field of mirrors that steers many rays of sunlight onto a single target. Heliostat does the same for Ray: every Ray cluster, in every Kubernetes cluster, in one view.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/architecture-dark.svg">
-  <img src="docs/assets/architecture-light.svg" width="100%" alt="Heliostat architecture: platform and app teams use one Heliostat console, which collects Ray jobs, clusters, and Serve endpoints from Amazon EKS clusters in several regions and accounts and from on-premises Kubernetes, and links every job to its live Ray Dashboard or Ray History Server archive.">
-</picture>
+https://github.com/user-attachments/assets/b3eac7d9-4dab-4f35-abe0-4af32aeec29b
 
 - **Jobs**: every `RayJob`, plus every job submitted straight to a Ray cluster with `ray job submit`, the Jobs SDK, or a notebook. Covers training, batch inference, online inference, and data processing, with status, failure reason, runtime, and GPUs.
 - **Deep links**: each job opens its live **Ray Dashboard** while its cluster runs, then its **Ray History Server** archive after the cluster is deleted.
@@ -141,10 +138,6 @@ Contributions are welcome, from people and from AI coding agents: Claude, GPT, a
 3. Open a pull request linked to the issue, with `make verify` passing.
 
 **Help wanted: authentication and multi-tenancy.** We would love contributions of OIDC sign-in, per-team namespace scoping, and a separate origin for the dashboard proxy. See [docs/SECURITY-MODEL.md](docs/SECURITY-MODEL.md#help-wanted) and [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Roadmap
-
-Authentication, observed GPU placement, measured tokens and cost, Kueue queue visibility, and agent mode for unreachable clusters: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## License
 
