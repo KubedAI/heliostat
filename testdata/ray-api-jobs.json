@@ -1,0 +1,19 @@
+[
+  {
+    "type": "SUBMISSION",
+    "job_id": null,
+    "submission_id": "heliostat-lifecycle-short-flpsb",
+    "driver_info": null,
+    "status": "SUCCEEDED",
+    "entrypoint": "python -c 'import time; print('\"'\"'short batch started'\"'\"', flush=True); time.sleep(120); print('\"'\"'short batch complete'\"'\"', flush=True)'",
+    "message": "Job finished successfully.",
+    "error_type": null,
+    "start_time": 1790367578624,
+    "end_time": 1790367700489,
+    "metadata": {},
+    "runtime_env": {},
+    "driver_agent_http_address": "http://10.0.0.191:52365",
+    "driver_node_id": "57b86c3d016d7f45e6b7bf000886fa49c37dcc1f6cc797ed4ea1c3a7",
+    "driver_exit_code": 0
+  }
+]

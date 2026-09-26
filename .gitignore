@@ -1,0 +1,21 @@
+# Go
+/bin/
+*.test
+*.out
+
+# Web UI (ui/)
+/ui/node_modules/
+/ui/.next/
+/ui/out/
+/ui/next-env.d.ts
+/ui/*.tsbuildinfo
+# Staged UI build embedded into the binary; only the README is tracked.
+/ui/dist/*
+!/ui/dist/README.md
+
+# Local data and environment
+/.data/
+.env*
+*.pem
+.DS_Store
+npm-debug.log*

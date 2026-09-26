@@ -1,0 +1,23 @@
+# A small, CPU-only standalone RayCluster for testing jobs submitted outside RayJob CRs.
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: heliostat-shared
+  namespace: raydata
+  labels:
+    heliostat.io/test: standalone
+spec:
+  rayVersion: "2.56.0"
+  headGroupSpec:
+    rayStartParams: { num-cpus: "1" }
+    template:
+      spec:
+        serviceAccountName: raydata
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.56.0-py312
+            resources:
+              requests: { cpu: 250m, memory: 1Gi }
+              limits: { memory: 2Gi }
+        nodeSelector: { kubernetes.io/arch: amd64 }
+  workerGroupSpecs: []

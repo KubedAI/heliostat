@@ -1,0 +1,13 @@
+Heliostat is installed.
+
+Open it privately:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "heliostat.fullname" . }} 8080:{{ .Values.service.port }}
+
+Then visit http://127.0.0.1:8080
+
+Indexed clusters: {{ range .Values.clusters }}{{ .name }} {{ end }}
+Collector status: http://127.0.0.1:8080/api/health
+{{- if not .Values.persistence.enabled }}
+
+WARNING: persistence is disabled; job history is lost when the pod restarts.
+{{- end }}

@@ -1,0 +1,57 @@
+# Heliostat configuration: an annotated example for local development (`make run`).
+#
+# In Kubernetes, the Helm chart renders this file from its values (`clusters`, `collector`,
+# `retention`). Keep your real configuration in a private values file, not in this repository:
+# it holds no credentials, but it names your clusters, regions, and accounts. See docs/CLUSTERS.md.
+#
+# Heliostat indexes exactly the clusters listed here. Without a `clusters` list it indexes only
+# the cluster reachable through the current kubeconfig context (or, in a pod, its own cluster).
+
+clusters:
+  # One entry per Kubernetes cluster. `name` is a stable DNS label stored with every job and used
+  # in URLs; do not rename a cluster once jobs have been recorded.
+  - name: local
+    displayName: Local cluster # optional; shown in the UI
+    region: us-west-2 # optional; shown under the name (EKS entries default to their region)
+
+    # How to authenticate to the Kubernetes API server. Credentials are never written here.
+    #   default     in-cluster service account, or the current kubeconfig context locally
+    #   kubeconfig  { path, context? }: a kubeconfig file, for example mounted from a Secret
+    #   eks         { clusterName, region, roleArn?, externalId? }: IAM, cross-account capable
+    connection:
+      type: default
+
+    # How to reach Ray head dashboards and the History Server:
+    #   apiserver (default)  Kubernetes API server service proxy with a get-only identity, so
+    #                        Kubernetes itself rejects any write to Ray. Works for remote clusters.
+    #   direct               <svc>.<namespace>.svc from inside this cluster. Faster, but opens a
+    #                        network path to Ray's unauthenticated Jobs API. See docs/SECURITY-MODEL.md.
+    serviceTransport: apiserver
+
+    # Proxy live Ray Dashboards and poll their Jobs API for `ray job submit` workloads.
+    rayDashboards: true
+
+    # KubeRay History Server (optional): enables links for deleted Ray clusters.
+    # Shorthand is "<service>.<namespace>:<port>".
+    # historyServer:
+    #   api: ray-history-server.ray-history-server:8080
+    #   dashboard: ray-history-dashboard.ray-history-server:8265
+
+  # An EKS cluster in another region or AWS account (see docs/CLUSTERS.md for the IAM setup):
+  # - name: analytics-eu-west-1
+  #   connection:
+  #     type: eks
+  #     clusterName: analytics
+  #     region: eu-west-1
+  #     roleArn: arn:aws:iam::222222222222:role/heliostat-reader
+
+collector:
+  resyncIntervalSeconds: 900 # full relist as a safety net
+  submissionPollIntervalSeconds: 30 # Ray Jobs API poll per ready head
+  historyPollIntervalSeconds: 60 # History Server archive index refresh
+  maxConcurrentRequests: 8 # parallel Ray head requests per cluster
+  requestTimeoutSeconds: 5
+
+retention:
+  # Jobs whose RayJob or Ray cluster has been gone for longer than this are deleted.
+  days: 90

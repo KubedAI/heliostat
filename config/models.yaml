@@ -1,0 +1,31 @@
+models:
+  - id: deepseek-r1-distill-qwen-8b
+    name: DeepSeek R1 Distill Qwen 8B
+    description: Reasoning-focused model approved for summarization, extraction, and internal evaluation workloads.
+    provider: DeepSeek
+    revision: main@4f4d3c1
+    task: Text generation
+    status: approved
+    gpuProfiles: [L4, L40S]
+    contextLength: 32768
+    tags: [Reasoning, vLLM, Ray Data]
+  - id: gemma-3-12b-it
+    name: Gemma 3 12B IT
+    description: Multimodal instruction model for document understanding and high-throughput content processing.
+    provider: Google
+    revision: main@c2a91e7
+    task: Multimodal generation
+    status: approved
+    gpuProfiles: [L40S, H100]
+    contextLength: 131072
+    tags: [Multimodal, vLLM, Ray Serve]
+  - id: qwen-2-5-32b-instruct
+    name: Qwen 2.5 32B Instruct
+    description: General-purpose model for structured extraction, enrichment, classification, and synthetic data.
+    provider: Alibaba Cloud
+    revision: main@a8b77d2
+    task: Text generation
+    status: approved
+    gpuProfiles: [2x L40S, A100, H100]
+    contextLength: 32768
+    tags: [General, Structured output, vLLM]

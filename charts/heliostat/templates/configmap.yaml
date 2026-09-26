@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "heliostat.fullname" . }}
+  labels:
+    {{- include "heliostat.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    {{- include "heliostat.config" . | nindent 4 }}
+  models.yaml: |
+    {{- dict "models" .Values.models | toYaml | nindent 4 }}

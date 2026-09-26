@@ -1,0 +1,157 @@
+# -- Heliostat runs as exactly one replica: job history lives in SQLite on a ReadWriteOnce volume.
+replicaCount: 1
+
+image:
+  # -- No image is published: build it and push it to your own registry, then set this to
+  # <registry>/heliostat (see the README). The bare default matches `make image` for local clusters.
+  repository: heliostat
+  # -- Defaults to the chart appVersion.
+  tag: ""
+  # -- Pin an immutable digest (sha256:...) in production; overrides tag when set.
+  digest: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  # -- Defaults to the release full name.
+  name: ""
+  # -- For IRSA, add eks.amazonaws.com/role-arn. EKS Pod Identity needs no annotation.
+  annotations: {}
+
+rbac:
+  create: true
+  # -- Grants `get` (only) on services/proxy, which the default serviceTransport (apiserver) uses to
+  # reach Ray dashboards. The API server rejects proxied POST/PUT/DELETE for a get-only identity.
+  serviceProxy: true
+
+service:
+  # -- ClusterIP by default; open the UI with `kubectl port-forward`.
+  type: ClusterIP
+  port: 80
+  annotations: {}
+  # -- Heliostat has no authentication and proxies Ray logs. A LoadBalancer must be internal
+  # (service.beta.kubernetes.io/aws-load-balancer-scheme: internal) unless this is set to true.
+  allowInternetFacing: false
+
+# -- Kubernetes clusters to index. See config/heliostat.yaml in the repository for every field.
+clusters:
+  - name: in-cluster
+    # region: us-west-2
+    connection:
+      type: default
+    # apiserver (default): read-only enforced by Kubernetes. direct: faster, but see SECURITY.md.
+    serviceTransport: apiserver
+    rayDashboards: true
+    # historyServer:
+    #   api: ray-history-server.ray-history-server:8080
+    #   dashboard: ray-history-dashboard.ray-history-server:8265
+  # A cluster in another AWS account (see docs/CLUSTERS.md):
+  # - name: prod-us-east-1
+  #   connection:
+  #     type: eks
+  #     clusterName: prod
+  #     region: us-east-1
+  #     roleArn: arn:aws:iam::222222222222:role/heliostat-reader
+
+collector:
+  resyncIntervalSeconds: 900
+  submissionPollIntervalSeconds: 30
+  historyPollIntervalSeconds: 60
+  maxConcurrentRequests: 8
+  requestTimeoutSeconds: 5
+
+retention:
+  # -- Delete jobs whose RayJob or Ray cluster has been gone for longer than this.
+  days: 90
+
+persistence:
+  # -- Without persistence, history is lost on every restart.
+  enabled: true
+  size: 1Gi
+  storageClassName: ""
+  existingClaim: ""
+
+logLevel: info
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 96Mi
+  limits:
+    memory: 384Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]
+
+# -- Extra volumes, for example a Secret holding kubeconfigs for on-premises clusters.
+extraVolumes: []
+#  - name: remote-kubeconfigs
+#    secret:
+#      secretName: heliostat-kubeconfigs
+extraVolumeMounts: []
+#  - name: remote-kubeconfigs
+#    mountPath: /var/run/heliostat/kubeconfigs
+#    readOnly: true
+extraEnv: []
+
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+priorityClassName: ""
+
+networkPolicy:
+  # -- Egress lock: Heliostat may only open TCP 443 (Kubernetes API servers, AWS APIs) and DNS, so
+  # even a compromised pod cannot reach Ray's unauthenticated ports (8265, 10001, 6379, 8000).
+  # Enforced only when your CNI enforces NetworkPolicy (VPC CNI with network policy, Cilium, Calico).
+  enabled: true
+  egressPorts: [443]
+  # -- Namespaces allowed to reach the UI (port 3000). Empty allows all; port-forward always works.
+  ingressNamespaces: []
+
+# -- Approved-model catalog shown on the Models page.
+models:
+  - id: deepseek-r1-distill-qwen-8b
+    name: DeepSeek R1 Distill Qwen 8B
+    description: Reasoning-focused model approved for summarization, extraction, and internal evaluation workloads.
+    provider: DeepSeek
+    revision: main@4f4d3c1
+    task: Text generation
+    status: approved
+    gpuProfiles: [L4, L40S]
+    contextLength: 32768
+    tags: [Reasoning, vLLM, Ray Data]
+  - id: gemma-4-12b-it
+    name: Gemma 4 12B IT
+    description: Multimodal instruction model approved for document understanding and high-throughput content processing.
+    provider: Google
+    revision: main
+    task: Multimodal generation
+    status: approved
+    gpuProfiles: [L40S, H100]
+    contextLength: 65536
+    tags: [Multimodal, vLLM, Ray Serve]
+  - id: qwen-2-5-32b-instruct
+    name: Qwen 2.5 32B Instruct
+    description: General-purpose model for structured extraction, enrichment, classification, and synthetic data.
+    provider: Alibaba Cloud
+    revision: main@a8b77d2
+    task: Text generation
+    status: approved
+    gpuProfiles: [2x L40S, A100, H100]
+    contextLength: 32768
+    tags: [General, Structured output, vLLM]

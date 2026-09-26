@@ -1,0 +1,14 @@
+.git
+.github
+.data
+bin
+ui/node_modules
+ui/.next
+ui/out
+ui/dist
+charts
+deploy
+docs
+experiments
+*.md
+!ui/dist/README.md

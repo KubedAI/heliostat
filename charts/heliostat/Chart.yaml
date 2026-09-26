@@ -1,0 +1,8 @@
+apiVersion: v2
+name: heliostat
+description: Read-only console for every KubeRay job, Ray cluster, and RayService across Kubernetes clusters
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+kubeVersion: ">=1.27.0-0"
+keywords: [kuberay, ray, batch-inference, observability]

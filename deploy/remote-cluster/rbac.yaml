@@ -1,0 +1,34 @@
+# Read-only access for a Heliostat hub running in another cluster or AWS account.
+#
+# Apply to each remote cluster, then map the hub's IAM role to the `heliostat:readers` group with
+# an EKS access entry (see docs/CLUSTERS.md):
+#
+#   aws eks create-access-entry --cluster-name <remote> \
+#     --principal-arn arn:aws:iam::<remote-account>:role/heliostat-reader \
+#     --kubernetes-groups heliostat:readers
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: heliostat-remote-reader
+rules:
+  - apiGroups: ["ray.io"]
+    resources: ["rayjobs", "rayclusters", "rayservices"]
+    verbs: ["get", "list", "watch"]
+  # Ray head dashboards and the History Server through the API server proxy.
+  # `get` only: the API server rejects proxied POST, PUT, and DELETE.
+  - apiGroups: [""]
+    resources: ["services/proxy"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: heliostat-remote-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: heliostat-remote-reader
+subjects:
+  - kind: Group
+    name: heliostat:readers
+    apiGroup: rbac.authorization.k8s.io

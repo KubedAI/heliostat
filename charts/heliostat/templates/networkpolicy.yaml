@@ -1,0 +1,42 @@
+{{- if .Values.networkPolicy.enabled }}
+{{- range .Values.clusters }}
+{{- if eq (.serviceTransport | default "apiserver") "direct" }}
+{{- fail (printf "cluster %q uses serviceTransport: direct, which needs egress to Ray ports; the egress lock (networkPolicy.enabled) would block it. Use apiserver (recommended) or disable networkPolicy." .name) }}
+{{- end }}
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "heliostat.fullname" . }}
+  labels:
+    {{- include "heliostat.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "heliostat.selectorLabels" . | nindent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - ports:
+        - port: http
+      {{- with .Values.networkPolicy.ingressNamespaces }}
+      from:
+        {{- range . }}
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ . }}
+        {{- end }}
+      {{- end }}
+  egress:
+    # Kubernetes API servers (local and remote) and AWS APIs (STS, EKS) only.
+    - ports:
+        {{- range .Values.networkPolicy.egressPorts }}
+        - protocol: TCP
+          port: {{ . }}
+        {{- end }}
+    # DNS.
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+{{- end }}

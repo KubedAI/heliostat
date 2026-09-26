@@ -1,0 +1,150 @@
+{
+  "apiVersion": "ray.io/v1",
+  "kind": "RayJob",
+  "metadata": {
+    "annotations": {
+      "heliostat.io/estimated-cost-usd": "0.008",
+      "heliostat.io/input-tokens": "7300",
+      "heliostat.io/output-tokens": "0",
+      "heliostat.io/total-tokens": "7300"
+    },
+    "creationTimestamp": "2026-09-25T20:19:16Z",
+    "finalizers": ["ray.io/rayjob-finalizer"],
+    "generation": 3,
+    "labels": {
+      "heliostat.io/model-id": "deepseek-r1-distill-qwen-8b",
+      "heliostat.io/owner": "platform-validation",
+      "heliostat.io/test": "lifecycle",
+      "heliostat.io/workload-type": "native-batch"
+    },
+    "name": "heliostat-lifecycle-failure",
+    "namespace": "raydata",
+    "resourceVersion": "76839236",
+    "uid": "92cd49b0-67f0-41da-bdb3-6688d7648c0c"
+  },
+  "spec": {
+    "backoffLimit": 0,
+    "entrypoint": "python -c \"import time,sys; print('failure-path batch started', flush=True); time.sleep(60); print('controlled validation failure', flush=True); sys.exit(1)\"",
+    "rayClusterSpec": {
+      "headGroupSpec": {
+        "rayStartParams": {
+          "num-cpus": "1"
+        },
+        "template": {
+          "metadata": {},
+          "spec": {
+            "containers": [
+              {
+                "image": "rayproject/ray:2.56.0-py312",
+                "name": "ray-head",
+                "resources": {
+                  "limits": {
+                    "memory": "2Gi"
+                  },
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "1Gi"
+                  }
+                }
+              }
+            ],
+            "nodeSelector": {
+              "kubernetes.io/arch": "amd64"
+            },
+            "serviceAccountName": "raydata"
+          }
+        }
+      },
+      "rayVersion": "2.56.0",
+      "workerGroupSpecs": []
+    },
+    "shutdownAfterJobFinishes": true,
+    "submissionMode": "K8sJobMode",
+    "submitterPodTemplate": {
+      "metadata": {},
+      "spec": {
+        "containers": [
+          {
+            "image": "rayproject/ray:2.56.0-py312",
+            "name": "ray-job-submitter"
+          }
+        ],
+        "restartPolicy": "Never",
+        "serviceAccountName": "raydata"
+      }
+    },
+    "ttlSecondsAfterFinished": 86400
+  },
+  "status": {
+    "dashboardURL": "heliostat-lifecycle-failure-wdqdq-head-svc.raydata.svc.cluster.local:8265",
+    "endTime": "2026-09-25T20:20:49Z",
+    "failed": 1,
+    "jobDeploymentStatus": "Failed",
+    "jobId": "heliostat-lifecycle-failure-4szb9",
+    "jobStatus": "FAILED",
+    "message": "Job entrypoint command failed with exit code 1, last available logs (truncated to 20,000 chars):\n2026-09-25 13:19:39,671\tINFO job_manager.py:583 -- Runtime env is setting up.\nRunning entrypoint for job heliostat-lifecycle-failure-4szb9: python -c 'import time,sys; print('\"'\"'failure-path batch started'\"'\"', flush=True); time.sleep(60); print('\"'\"'controlled validation failure'\"'\"', flush=True); sys.exit(1)'\nfailure-path batch started\ncontrolled validation failure\n",
+    "rayClusterName": "heliostat-lifecycle-failure-wdqdq",
+    "rayClusterStatus": {
+      "conditions": [
+        {
+          "lastTransitionTime": "2026-09-25T20:19:34Z",
+          "message": "",
+          "reason": "HeadPodRunningAndReady",
+          "status": "True",
+          "type": "HeadPodReady"
+        },
+        {
+          "lastTransitionTime": "2026-09-25T20:19:34Z",
+          "message": "All Ray Pods are ready for the first time",
+          "reason": "AllPodRunningAndReadyFirstTime",
+          "status": "True",
+          "type": "RayClusterProvisioned"
+        },
+        {
+          "lastTransitionTime": "2026-09-25T20:19:16Z",
+          "message": "",
+          "reason": "RayClusterSuspended",
+          "status": "False",
+          "type": "RayClusterSuspended"
+        },
+        {
+          "lastTransitionTime": "2026-09-25T20:19:16Z",
+          "message": "",
+          "reason": "RayClusterSuspending",
+          "status": "False",
+          "type": "RayClusterSuspending"
+        }
+      ],
+      "desiredCPU": "250m",
+      "desiredGPU": "0",
+      "desiredMemory": "1Gi",
+      "desiredTPU": "0",
+      "endpoints": {
+        "client": "10001",
+        "dashboard": "8265",
+        "gcs-server": "6379",
+        "metrics": "8080",
+        "serve": "8000"
+      },
+      "head": {
+        "podIP": "10.0.0.190",
+        "podName": "heliostat-lifecycle-failure-wdqdq-head-9x9vm",
+        "serviceIP": "10.0.0.190",
+        "serviceName": "heliostat-lifecycle-failure-wdqdq-head-svc"
+      },
+      "lastUpdateTime": "2026-09-25T20:19:34Z",
+      "observedGeneration": 1,
+      "state": "ready",
+      "stateTransitionTimes": {
+        "ready": "2026-09-25T20:19:34Z"
+      }
+    },
+    "rayJobInfo": {
+      "endTime": "2026-09-25T20:20:41Z",
+      "startTime": "2026-09-25T20:19:39Z"
+    },
+    "reason": "AppFailed",
+    "startTime": "2026-09-25T20:19:16Z",
+    "succeeded": 0
+  }
+}

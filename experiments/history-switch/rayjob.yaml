@@ -1,0 +1,52 @@
+# A CPU-only RayJob archived by the KubeRay History Server, used to watch Heliostat switch a job's
+# link from the live Ray Dashboard to the archive once KubeRay deletes the Ray cluster.
+#
+# Render: S3_BUCKET=<history bucket> envsubst < rayjob.yaml | kubectl apply -f -
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: heliostat-history-switch
+  namespace: raydata
+  labels:
+    heliostat.io/test: history-switch
+    heliostat.io/owner: platform-validation
+    heliostat.io/workload-type: native-batch
+spec:
+  entrypoint: >-
+    python -c "import ray, time; ray.init();
+    f = ray.remote(lambda i: (time.sleep(1), i * i)[1]);
+    print('sum of squares:', sum(ray.get([f.remote(i) for i in range(60)])), flush=True);
+    time.sleep(10)"
+  shutdownAfterJobFinishes: true
+  # Long enough for the collector to flush final events, short enough to watch the switch.
+  ttlSecondsAfterFinished: 120
+  submitterPodTemplate:
+    spec:
+      serviceAccountName: raydata
+      restartPolicy: Never
+      containers:
+        - name: ray-job-submitter
+          image: rayproject/ray:2.56.0-py312
+  rayClusterSpec:
+    rayVersion: "2.56.0"
+    historyServerOptions:
+      collectorOptions:
+        image: quay.io/kuberay/collector:v1.7.1
+        env:
+          - { name: STORAGE_BACKEND, value: s3 }
+          - { name: STORAGE_ROOT_DIR, value: ray-history }
+          - { name: S3_BUCKET, value: $S3_BUCKET }
+          - { name: S3_REGION, value: us-west-2 }
+    headGroupSpec:
+      rayStartParams: { num-cpus: "2" }
+      template:
+        spec:
+          serviceAccountName: raydata
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.56.0-py312
+              resources:
+                requests: { cpu: "1", memory: 2Gi }
+                limits: { memory: 4Gi }
+          nodeSelector: { kubernetes.io/arch: amd64 }
+    workerGroupSpecs: []

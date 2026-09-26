@@ -1,0 +1,149 @@
+{
+  "apiVersion": "ray.io/v1",
+  "kind": "RayJob",
+  "metadata": {
+    "annotations": {
+      "heliostat.io/estimated-cost-usd": "0.019",
+      "heliostat.io/input-tokens": "12000",
+      "heliostat.io/output-tokens": "2800",
+      "heliostat.io/total-tokens": "14800"
+    },
+    "creationTimestamp": "2026-09-25T20:19:15Z",
+    "finalizers": ["ray.io/rayjob-finalizer"],
+    "generation": 3,
+    "labels": {
+      "heliostat.io/model-id": "gemma-4-12b-it",
+      "heliostat.io/owner": "platform-validation",
+      "heliostat.io/test": "lifecycle",
+      "heliostat.io/workload-type": "native-batch"
+    },
+    "name": "heliostat-lifecycle-short",
+    "namespace": "raydata",
+    "resourceVersion": "76839232",
+    "uid": "b5597d63-05c4-4b12-ae2d-64ecd0d07980"
+  },
+  "spec": {
+    "backoffLimit": 0,
+    "entrypoint": "python -c \"import time; print('short batch started', flush=True); time.sleep(120); print('short batch complete', flush=True)\"",
+    "rayClusterSpec": {
+      "headGroupSpec": {
+        "rayStartParams": {
+          "num-cpus": "1"
+        },
+        "template": {
+          "metadata": {},
+          "spec": {
+            "containers": [
+              {
+                "image": "rayproject/ray:2.56.0-py312",
+                "name": "ray-head",
+                "resources": {
+                  "limits": {
+                    "memory": "2Gi"
+                  },
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "1Gi"
+                  }
+                }
+              }
+            ],
+            "nodeSelector": {
+              "kubernetes.io/arch": "amd64"
+            },
+            "serviceAccountName": "raydata"
+          }
+        }
+      },
+      "rayVersion": "2.56.0",
+      "workerGroupSpecs": []
+    },
+    "shutdownAfterJobFinishes": true,
+    "submissionMode": "K8sJobMode",
+    "submitterPodTemplate": {
+      "metadata": {},
+      "spec": {
+        "containers": [
+          {
+            "image": "rayproject/ray:2.56.0-py312",
+            "name": "ray-job-submitter"
+          }
+        ],
+        "restartPolicy": "Never",
+        "serviceAccountName": "raydata"
+      }
+    },
+    "ttlSecondsAfterFinished": 86400
+  },
+  "status": {
+    "dashboardURL": "heliostat-lifecycle-short-c6vcz-head-svc.raydata.svc.cluster.local:8265",
+    "endTime": "2026-09-25T20:21:48Z",
+    "failed": 0,
+    "jobDeploymentStatus": "Complete",
+    "jobId": "heliostat-lifecycle-short-flpsb",
+    "jobStatus": "SUCCEEDED",
+    "message": "Job finished successfully.",
+    "rayClusterName": "heliostat-lifecycle-short-c6vcz",
+    "rayClusterStatus": {
+      "conditions": [
+        {
+          "lastTransitionTime": "2026-09-25T20:19:32Z",
+          "message": "",
+          "reason": "HeadPodRunningAndReady",
+          "status": "True",
+          "type": "HeadPodReady"
+        },
+        {
+          "lastTransitionTime": "2026-09-25T20:19:32Z",
+          "message": "All Ray Pods are ready for the first time",
+          "reason": "AllPodRunningAndReadyFirstTime",
+          "status": "True",
+          "type": "RayClusterProvisioned"
+        },
+        {
+          "lastTransitionTime": "2026-09-25T20:19:15Z",
+          "message": "",
+          "reason": "RayClusterSuspended",
+          "status": "False",
+          "type": "RayClusterSuspended"
+        },
+        {
+          "lastTransitionTime": "2026-09-25T20:19:15Z",
+          "message": "",
+          "reason": "RayClusterSuspending",
+          "status": "False",
+          "type": "RayClusterSuspending"
+        }
+      ],
+      "desiredCPU": "250m",
+      "desiredGPU": "0",
+      "desiredMemory": "1Gi",
+      "desiredTPU": "0",
+      "endpoints": {
+        "client": "10001",
+        "dashboard": "8265",
+        "gcs-server": "6379",
+        "metrics": "8080",
+        "serve": "8000"
+      },
+      "head": {
+        "podIP": "10.0.0.191",
+        "podName": "heliostat-lifecycle-short-c6vcz-head-grwdh",
+        "serviceIP": "10.0.0.191",
+        "serviceName": "heliostat-lifecycle-short-c6vcz-head-svc"
+      },
+      "lastUpdateTime": "2026-09-25T20:19:32Z",
+      "observedGeneration": 1,
+      "state": "ready",
+      "stateTransitionTimes": {
+        "ready": "2026-09-25T20:19:32Z"
+      }
+    },
+    "rayJobInfo": {
+      "endTime": "2026-09-25T20:21:40Z",
+      "startTime": "2026-09-25T20:19:38Z"
+    },
+    "startTime": "2026-09-25T20:19:15Z",
+    "succeeded": 1
+  }
+}

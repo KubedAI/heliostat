@@ -1,0 +1,147 @@
+<svg viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg" width="1200" height="720" role="img" aria-labelledby="arch-title arch-desc" class="arch-svg"><style>.arch-box {
+  fill: #ffffff;
+  stroke: #111111;
+  stroke-width: 1.5;
+}
+.arch-box.soft {
+  fill: #f4f3ee;
+}
+.arch-box.hub {
+  stroke-width: 2.5;
+}
+.arch-box.dashed,
+.arch-group.muted {
+  stroke-dasharray: 7 6;
+}
+.arch-cluster.muted .arch-box {
+  fill: #f4f3ee;
+  stroke: #7a7973;
+}
+.arch-shadow {
+  fill: #111111;
+}
+.arch-hub-glow {
+  fill: none;
+  stroke: #ffd83d;
+  stroke-width: 10;
+  opacity: 0.35;
+  animation: hub-glow 3s ease-in-out infinite;
+}
+.arch-tab {
+  fill: #f4f3ee;
+  stroke: #111111;
+}
+.arch-tab-text {
+  fill: #111111;
+  font-family: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.arch-group {
+  fill: color-mix(in srgb, #3b5bdb 4%, transparent);
+  stroke: #7a7973;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+}
+.arch-group.muted {
+  fill: color-mix(in srgb, #7a7973 7%, transparent);
+}
+.arch-group-label {
+  fill: #faf9f5;
+  stroke: #7a7973;
+}
+.arch-group-label.muted {
+  stroke-dasharray: 4 4;
+}
+.arch-badge {
+  fill: #ffd83d;
+  stroke: #111111;
+}
+.arch-badge-text {
+  fill: #111111;
+  font-family: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.arch-pill {
+  fill: #f4f3ee;
+  stroke: #d9d8d1;
+}
+.arch-title {
+  fill: #111111;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.arch-title.large {
+  font-size: 26px;
+  letter-spacing: -0.03em;
+}
+.arch-title.small {
+  font-size: 16px;
+}
+.arch-mono {
+  fill: #5c5b56;
+  font-family: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 13px;
+}
+.arch-mono.strong {
+  fill: #111111;
+}
+.arch-mono.live {
+  fill: #2b8a3e;
+}
+.arch-caption {
+  fill: #5c5b56;
+  font-family: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+.arch-cluster.muted .arch-title,
+.arch-cluster.muted .arch-caption {
+  fill: #7a7973;
+}
+.arch-link {
+  fill: none;
+  stroke: #d9d8d1;
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+.arch-flow {
+  fill: none;
+  stroke: #111111;
+  stroke-width: 2;
+  stroke-dasharray: 2 12;
+  stroke-linecap: round;
+  animation: arch-flow linear infinite;
+}
+.arch-link.muted {
+  stroke-dasharray: 10 8;
+}
+.arch-flow.muted {
+  stroke: #7a7973;
+}
+.arch-packet {
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+.ray-worker {
+  animation: ray-worker 2.4s ease-in-out infinite;
+}
+@keyframes arch-flow {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+@keyframes hub-glow {
+  50% {
+    opacity: 0.05;
+  }
+}
+@keyframes ray-worker {
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .arch-flow, .arch-hub-glow, .ray-worker { animation: none; } .arch-packet { display: none; } } text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; }</style><rect x="0" y="0" width="1200" height="720" fill="#ffffff" rx="12"/><title id="arch-title">Heliostat architecture</title><desc id="arch-desc">Platform and application teams use Heliostat, one read-only console that collects Ray jobs, Ray clusters, and Ray Serve endpoints from Amazon EKS clusters in several regions and accounts and from on-premises Kubernetes. Every job opens its live Ray Dashboard or its Ray History Server archive.</desc><g><path id="flow-west" d="M180 352 C 180 270, 500 290, 500 196" class="arch-link"></path><path d="M180 352 C 180 270, 500 290, 500 196" class="arch-flow" style="animation-duration:1.2s"></path><circle r="5.5" fill="#3b5bdb" class="arch-packet"><animateMotion dur="3.6s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-west"></mpath></animateMotion></circle><circle r="5.5" fill="#ffd83d" class="arch-packet"><animateMotion dur="3.6s" begin="1.2s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-west"></mpath></animateMotion></circle><circle r="5.5" fill="#2b8a3e" class="arch-packet"><animateMotion dur="3.6s" begin="2.4s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-west"></mpath></animateMotion></circle></g><g><path id="flow-east" d="M460 352 C 460 280, 565 290, 565 196" class="arch-link"></path><path d="M460 352 C 460 280, 565 290, 565 196" class="arch-flow" style="animation-duration:1s"></path><circle r="5.5" fill="#e8590c" class="arch-packet"><animateMotion dur="3s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-east"></mpath></animateMotion></circle><circle r="5.5" fill="#3b5bdb" class="arch-packet"><animateMotion dur="3s" begin="1.5s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-east"></mpath></animateMotion></circle></g><g><path id="flow-eu" d="M740 352 C 740 280, 635 290, 635 196" class="arch-link"></path><path d="M740 352 C 740 280, 635 290, 635 196" class="arch-flow" style="animation-duration:1.0999999999999999s"></path><circle r="5.5" fill="#ffd83d" class="arch-packet"><animateMotion dur="3.3s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-eu"></mpath></animateMotion></circle><circle r="5.5" fill="#2b8a3e" class="arch-packet"><animateMotion dur="3.3s" begin="1.65s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-eu"></mpath></animateMotion></circle></g><g><path id="flow-onprem" d="M1045 352 C 1045 250, 700 290, 700 196" class="arch-link muted"></path><path d="M1045 352 C 1045 250, 700 290, 700 196" class="arch-flow muted" style="animation-duration:1.6666666666666667s"></path><circle r="4.5" fill="#7a7973" class="arch-packet"><animateMotion dur="5s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-onprem"></mpath></animateMotion></circle></g><g><path id="flow-users" d="M232 116 H 418" class="arch-link"></path><path d="M232 116 H 418" class="arch-flow" style="animation-duration:0.8666666666666667s"></path><circle r="5.5" fill="#111111" class="arch-packet"><animateMotion dur="2.6s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-users"></mpath></animateMotion></circle><circle r="5.5" fill="#3b5bdb" class="arch-packet"><animateMotion dur="2.6s" begin="1.3s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-users"></mpath></animateMotion></circle></g><g><path id="flow-live" d="M782 96 C 850 96, 860 68, 928 68" class="arch-link"></path><path d="M782 96 C 850 96, 860 68, 928 68" class="arch-flow" style="animation-duration:0.7333333333333334s"></path><circle r="5.5" fill="#2b8a3e" class="arch-packet"><animateMotion dur="2.2s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-live"></mpath></animateMotion></circle></g><g><path id="flow-history" d="M782 140 C 850 140, 860 160, 928 160" class="arch-link"></path><path d="M782 140 C 850 140, 860 160, 928 160" class="arch-flow" style="animation-duration:0.8666666666666667s"></path><circle r="5.5" fill="#e8590c" class="arch-packet"><animateMotion dur="2.6s" begin="0s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#flow-history"></mpath></animateMotion></circle></g><rect x="60" y="72" width="172" height="88" class="arch-box soft"></rect><g fill="#111111"><circle cx="91" cy="104" r="6"></circle><path d="M80 124 a11 11 0 0 1 22 0 z"></path><circle cx="110" cy="102" r="7" fill="#3b5bdb"></circle><path d="M97 124 a13 13 0 0 1 26 0 z" fill="#3b5bdb"></path></g><text x="132" y="108" class="arch-title small">Platform</text><text x="132" y="128" class="arch-mono">+ app teams</text><rect x="420" y="34" width="360" height="162" class="arch-hub-glow"></rect><rect x="426" y="40" width="360" height="156" class="arch-shadow"></rect><rect x="420" y="34" width="360" height="156" class="arch-box hub"></rect><svg x="444" y="56" width="44" height="44" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="28" height="28" fill="#3b5bdb"></rect><rect x="1" y="1" width="28" height="28" fill="#ffd83d" stroke="#111" stroke-width="2"></rect><circle cx="15" cy="10" r="3.4" fill="#111"></circle><path d="M5 25 L15 10 M25 25 L15 10 M15 25 L15 10" stroke="#111" stroke-width="2" stroke-linecap="round"></path></svg><text x="500" y="78" class="arch-title large">Heliostat</text><text x="500" y="98" class="arch-mono">one read-only console</text><g><rect x="444" y="134" width="72" height="34" class="arch-tab"></rect><text x="480" y="156" text-anchor="middle" class="arch-tab-text">Jobs</text></g><g><rect x="526" y="134" width="98" height="34" class="arch-tab"></rect><text x="575" y="156" text-anchor="middle" class="arch-tab-text">Clusters</text></g><g><rect x="634" y="134" width="122" height="34" class="arch-tab"></rect><text x="695" y="156" text-anchor="middle" class="arch-tab-text">Endpoints</text></g><rect x="930" y="36" width="236" height="64" class="arch-box"></rect><g stroke="#111111" stroke-width="2" fill="none"><rect x="948" y="58" width="24" height="16"></rect><line x1="960" y1="74" x2="960" y2="79"></line><line x1="954" y1="79" x2="966" y2="79"></line><polyline points="952,68 957,63 961,67 968,61" stroke="#2b8a3e"></polyline></g><text x="986" y="64" class="arch-title small">Ray Dashboard</text><text x="986" y="84" class="arch-mono live">● live</text><rect x="930" y="128" width="236" height="64" class="arch-box"></rect><g stroke="#111111" stroke-width="2" fill="none"><rect x="950" y="151" width="20" height="6"></rect><path d="M952 157 v12 h16 v-12"></path><line x1="957" y1="162" x2="963" y2="162"></line></g><text x="986" y="156" class="arch-title small">Ray History Server</text><text x="986" y="176" class="arch-mono">◷ archived in S3</text><rect x="32" y="300" width="856" height="366" class="arch-group"></rect><rect x="50" y="288" width="232" height="26" class="arch-group-label"></rect><text x="62" y="306" class="arch-mono strong">AWS · accounts × regions</text><g class="arch-cluster"><rect x="55" y="357" width="260" height="290" class="arch-shadow"></rect><rect x="50" y="352" width="260" height="290" class="arch-box"></rect><g><circle cx="80" cy="384" r="14" fill="#3b5bdb"></circle><circle cx="80" cy="384" r="6.5" fill="none" stroke="#ffffff" stroke-width="2"></circle><line x1="80" y1="377.5" x2="80" y2="373" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="85.0819046360422" y1="379.9473162879182" x2="88.60014630714832" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="86.33703142918185" y1="385.446386070716" x2="90.72420703400006" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="82.82024430426412" y1="389.8562976413657" x2="84.77272113029314" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="77.17975569573588" y1="389.8562976413657" x2="75.22727886970686" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="73.66296857081815" y1="385.446386070716" x2="69.27579296599994" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="74.9180953639578" y1="379.9473162879182" x2="71.39985369285168" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line></g><text x="104" y="382" class="arch-title">Amazon EKS</text><text x="104" y="402" class="arch-mono">us-west-2</text><g><rect x="244" y="370" width="52" height="24" class="arch-badge"></rect><text x="270" y="387" text-anchor="middle" class="arch-badge-text">hub</text></g><g class="ray-glyph" aria-label="RayJob"><line x1="115" y1="487" x2="93" y2="505" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><line x1="115" y1="487" x2="137" y2="505" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><line x1="115" y1="487" x2="115" y2="459" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:0.5s" cx="93" cy="505" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:0.9s" cx="137" cy="505" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.3s" cx="115" cy="459" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle cx="115" cy="487" r="13" fill="#3b5bdb"></circle></g><g class="ray-glyph" aria-label="RayCluster"><line x1="180" y1="487" x2="158" y2="505" stroke="#e8590c" stroke-width="2" opacity="0.5"></line><line x1="180" y1="487" x2="202" y2="505" stroke="#e8590c" stroke-width="2" opacity="0.5"></line><line x1="180" y1="487" x2="180" y2="459" stroke="#e8590c" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:1.5s" cx="158" cy="505" r="7.5" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.9s" cx="202" cy="505" r="7.5" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:2.3s" cx="180" cy="459" r="7.5" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"></circle><circle cx="180" cy="487" r="13" fill="#e8590c"></circle></g><g class="ray-glyph" aria-label="RayService"><line x1="245" y1="487" x2="223" y2="505" stroke="#2b8a3e" stroke-width="2" opacity="0.5"></line><line x1="245" y1="487" x2="267" y2="505" stroke="#2b8a3e" stroke-width="2" opacity="0.5"></line><line x1="245" y1="487" x2="245" y2="459" stroke="#2b8a3e" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:2.5s" cx="223" cy="505" r="7.5" fill="#ffffff" stroke="#2b8a3e" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:2.9s" cx="267" cy="505" r="7.5" fill="#ffffff" stroke="#2b8a3e" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:3.3s" cx="245" cy="459" r="7.5" fill="#ffffff" stroke="#2b8a3e" stroke-width="2.5"></circle><circle cx="245" cy="487" r="13" fill="#2b8a3e"></circle></g><g><rect x="70" y="578" width="220" height="40" class="arch-pill"></rect><g stroke="#111111" stroke-width="2" fill="none"><rect x="84" y="589" width="20" height="6"></rect><path d="M86 595 v12 h16 v-12"></path><line x1="91" y1="600" x2="97" y2="600"></line></g><text x="114" y="603" class="arch-mono strong">Ray History Server</text></g></g><g class="arch-cluster"><rect x="335" y="357" width="260" height="290" class="arch-shadow"></rect><rect x="330" y="352" width="260" height="290" class="arch-box"></rect><g><circle cx="360" cy="384" r="14" fill="#3b5bdb"></circle><circle cx="360" cy="384" r="6.5" fill="none" stroke="#ffffff" stroke-width="2"></circle><line x1="360" y1="377.5" x2="360" y2="373" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="365.08190463604217" y1="379.9473162879182" x2="368.60014630714835" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="366.3370314291819" y1="385.446386070716" x2="370.7242070340001" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="362.8202443042641" y1="389.8562976413657" x2="364.7727211302931" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="357.1797556957359" y1="389.8562976413657" x2="355.2272788697069" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="353.6629685708181" y1="385.446386070716" x2="349.2757929659999" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="354.91809536395783" y1="379.9473162879182" x2="351.39985369285165" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line></g><text x="384" y="382" class="arch-title">Amazon EKS</text><text x="384" y="402" class="arch-mono">us-east-1</text><g class="ray-glyph" aria-label="RayJob"><line x1="416.6666666666667" y1="487" x2="394.6666666666667" y2="505" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><line x1="416.6666666666667" y1="487" x2="438.6666666666667" y2="505" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><line x1="416.6666666666667" y1="487" x2="416.6666666666667" y2="459" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:0.2999999999999998s" cx="394.6666666666667" cy="505" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:0.6999999999999998s" cx="438.6666666666667" cy="505" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.0999999999999999s" cx="416.6666666666667" cy="459" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle cx="416.6666666666667" cy="487" r="13" fill="#3b5bdb"></circle></g><g class="ray-glyph" aria-label="RayCluster"><line x1="503.33333333333337" y1="487" x2="481.33333333333337" y2="505" stroke="#e8590c" stroke-width="2" opacity="0.5"></line><line x1="503.33333333333337" y1="487" x2="525.3333333333334" y2="505" stroke="#e8590c" stroke-width="2" opacity="0.5"></line><line x1="503.33333333333337" y1="487" x2="503.33333333333337" y2="459" stroke="#e8590c" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:1.2999999999999998s" cx="481.33333333333337" cy="505" r="7.5" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.6999999999999997s" cx="525.3333333333334" cy="505" r="7.5" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:2.0999999999999996s" cx="503.33333333333337" cy="459" r="7.5" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"></circle><circle cx="503.33333333333337" cy="487" r="13" fill="#e8590c"></circle></g><g><rect x="350" y="578" width="220" height="40" class="arch-pill"></rect><g stroke="#111111" stroke-width="2" fill="none"><rect x="364" y="589" width="20" height="6"></rect><path d="M366 595 v12 h16 v-12"></path><line x1="371" y1="600" x2="377" y2="600"></line></g><text x="394" y="603" class="arch-mono strong">Ray History Server</text></g></g><g class="arch-cluster"><rect x="615" y="357" width="260" height="290" class="arch-shadow"></rect><rect x="610" y="352" width="260" height="290" class="arch-box"></rect><g><circle cx="640" cy="384" r="14" fill="#3b5bdb"></circle><circle cx="640" cy="384" r="6.5" fill="none" stroke="#ffffff" stroke-width="2"></circle><line x1="640" y1="377.5" x2="640" y2="373" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="645.0819046360422" y1="379.9473162879182" x2="648.6001463071483" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="646.3370314291818" y1="385.446386070716" x2="650.7242070340001" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="642.8202443042642" y1="389.8562976413657" x2="644.7727211302931" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="637.1797556957358" y1="389.8562976413657" x2="635.2272788697069" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="633.6629685708182" y1="385.446386070716" x2="629.2757929659999" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="634.9180953639578" y1="379.9473162879182" x2="631.3998536928517" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line></g><text x="664" y="382" class="arch-title">Amazon EKS</text><text x="664" y="402" class="arch-mono">eu-west-1</text><g class="ray-glyph" aria-label="RayJob"><line x1="696.6666666666666" y1="487" x2="674.6666666666666" y2="505" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><line x1="696.6666666666666" y1="487" x2="718.6666666666666" y2="505" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><line x1="696.6666666666666" y1="487" x2="696.6666666666666" y2="459" stroke="#3b5bdb" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:0.09999999999999964s" cx="674.6666666666666" cy="505" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:0.49999999999999967s" cx="718.6666666666666" cy="505" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:0.8999999999999997s" cx="696.6666666666666" cy="459" r="7.5" fill="#ffffff" stroke="#3b5bdb" stroke-width="2.5"></circle><circle cx="696.6666666666666" cy="487" r="13" fill="#3b5bdb"></circle></g><g class="ray-glyph" aria-label="RayService"><line x1="783.3333333333334" y1="487" x2="761.3333333333334" y2="505" stroke="#2b8a3e" stroke-width="2" opacity="0.5"></line><line x1="783.3333333333334" y1="487" x2="805.3333333333334" y2="505" stroke="#2b8a3e" stroke-width="2" opacity="0.5"></line><line x1="783.3333333333334" y1="487" x2="783.3333333333334" y2="459" stroke="#2b8a3e" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:1.0999999999999996s" cx="761.3333333333334" cy="505" r="7.5" fill="#ffffff" stroke="#2b8a3e" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.4999999999999996s" cx="805.3333333333334" cy="505" r="7.5" fill="#ffffff" stroke="#2b8a3e" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.8999999999999997s" cx="783.3333333333334" cy="459" r="7.5" fill="#ffffff" stroke="#2b8a3e" stroke-width="2.5"></circle><circle cx="783.3333333333334" cy="487" r="13" fill="#2b8a3e"></circle></g><g><rect x="630" y="578" width="220" height="40" class="arch-pill"></rect><g stroke="#111111" stroke-width="2" fill="none"><rect x="644" y="589" width="20" height="6"></rect><path d="M646 595 v12 h16 v-12"></path><line x1="651" y1="600" x2="657" y2="600"></line></g><text x="674" y="603" class="arch-mono strong">Ray History Server</text></g></g><rect x="906" y="300" width="278" height="366" class="arch-group muted"></rect><rect x="924" y="288" width="120" height="26" class="arch-group-label muted"></rect><text x="936" y="306" class="arch-mono">on-premises</text><g class="arch-cluster muted"><rect x="915" y="352" width="260" height="290" class="arch-box dashed"></rect><g><circle cx="945" cy="384" r="14" fill="#7a7973"></circle><circle cx="945" cy="384" r="6.5" fill="none" stroke="#ffffff" stroke-width="2"></circle><line x1="945" y1="377.5" x2="945" y2="373" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="950.0819046360422" y1="379.9473162879182" x2="953.6001463071483" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="951.3370314291818" y1="385.446386070716" x2="955.7242070340001" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="947.8202443042642" y1="389.8562976413657" x2="949.7727211302931" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="942.1797556957358" y1="389.8562976413657" x2="940.2272788697069" y2="393.9106575469266" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="938.6629685708182" y1="385.446386070716" x2="934.2757929659999" y2="386.4477302735195" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line><line x1="939.9180953639578" y1="379.9473162879182" x2="936.3998536928517" y2="377.14161217955393" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line></g><text x="969" y="382" class="arch-title">Kubernetes</text><text x="969" y="402" class="arch-mono">data center</text><g class="ray-glyph" aria-label="RayJob"><line x1="1001.6666666666666" y1="487" x2="979.6666666666666" y2="505" stroke="#7a7973" stroke-width="2" opacity="0.5"></line><line x1="1001.6666666666666" y1="487" x2="1023.6666666666666" y2="505" stroke="#7a7973" stroke-width="2" opacity="0.5"></line><line x1="1001.6666666666666" y1="487" x2="1001.6666666666666" y2="459" stroke="#7a7973" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:0.15000000000000036s" cx="979.6666666666666" cy="505" r="7.5" fill="#ffffff" stroke="#7a7973" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:0.5500000000000004s" cx="1023.6666666666666" cy="505" r="7.5" fill="#ffffff" stroke="#7a7973" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:0.9500000000000004s" cx="1001.6666666666666" cy="459" r="7.5" fill="#ffffff" stroke="#7a7973" stroke-width="2.5"></circle><circle cx="1001.6666666666666" cy="487" r="13" fill="#7a7973"></circle></g><g class="ray-glyph" aria-label="RayCluster"><line x1="1088.3333333333333" y1="487" x2="1066.3333333333333" y2="505" stroke="#7a7973" stroke-width="2" opacity="0.5"></line><line x1="1088.3333333333333" y1="487" x2="1110.3333333333333" y2="505" stroke="#7a7973" stroke-width="2" opacity="0.5"></line><line x1="1088.3333333333333" y1="487" x2="1088.3333333333333" y2="459" stroke="#7a7973" stroke-width="2" opacity="0.5"></line><circle class="ray-worker" style="animation-delay:1.1500000000000004s" cx="1066.3333333333333" cy="505" r="7.5" fill="#ffffff" stroke="#7a7973" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.5500000000000003s" cx="1110.3333333333333" cy="505" r="7.5" fill="#ffffff" stroke="#7a7973" stroke-width="2.5"></circle><circle class="ray-worker" style="animation-delay:1.9500000000000004s" cx="1088.3333333333333" cy="459" r="7.5" fill="#ffffff" stroke="#7a7973" stroke-width="2.5"></circle><circle cx="1088.3333333333333" cy="487" r="13" fill="#7a7973"></circle></g></g><circle cx="380" cy="700" r="6" fill="#3b5bdb"/><text x="392" y="704" class="arch-mono">RayJob</text><circle cx="460" cy="700" r="6" fill="#e8590c"/><text x="472" y="704" class="arch-mono">RayCluster</text><circle cx="572" cy="700" r="6" fill="#2b8a3e"/><text x="584" y="704" class="arch-mono">RayService</text><circle cx="684" cy="700" r="6" fill="#7a7973"/><text x="696" y="704" class="arch-mono">on-prem extension</text></svg>
