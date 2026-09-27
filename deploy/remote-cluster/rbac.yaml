@@ -6,6 +6,14 @@
 #   aws eks create-access-entry --cluster-name <remote> \
 #     --principal-arn arn:aws:iam::<remote-account>:role/heliostat-reader \
 #     --kubernetes-groups heliostat:readers
+#
+# Two grants with different scopes:
+#   1. Ray resources, cluster-wide. Heliostat watches RayJobs, RayClusters, and RayServices in every
+#      namespace, so this binding must be a ClusterRoleBinding.
+#   2. The API server service proxy, per namespace. `get services/proxy` reaches any Service in its
+#      scope, including internal UIs that are not Ray. Bind it only in namespaces that run Ray
+#      clusters (and the History Server's namespace, if the remote cluster has one). Copy the
+#      RoleBinding at the end of this file for each namespace.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -14,11 +22,6 @@ rules:
   - apiGroups: ["ray.io"]
     resources: ["rayjobs", "rayclusters", "rayservices"]
     verbs: ["get", "list", "watch"]
-  # Ray head dashboards and the History Server through the API server proxy.
-  # `get` only: the API server rejects proxied POST, PUT, and DELETE.
-  - apiGroups: [""]
-    resources: ["services/proxy"]
-    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -28,6 +31,31 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: heliostat-remote-reader
+subjects:
+  - kind: Group
+    name: heliostat:readers
+    apiGroup: rbac.authorization.k8s.io
+---
+# Ray head dashboards and the History Server through the API server proxy.
+# `get` only: the API server rejects proxied POST, PUT, and DELETE.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: heliostat-remote-dashboard-proxy
+rules:
+  - apiGroups: [""]
+    resources: ["services/proxy"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: heliostat-remote-dashboard-proxy
+  namespace: raydata # one RoleBinding per namespace that runs Ray clusters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: heliostat-remote-dashboard-proxy
 subjects:
   - kind: Group
     name: heliostat:readers

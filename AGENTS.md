@@ -81,7 +81,7 @@ API handlers read only the store and collector memory. A browser request never r
 Transports (`kube.ServiceTransport`):
 
 - **`apiserver`** (the default) goes through the API server's service proxy with a `get`-only identity, so Kubernetes itself rejects any write to Ray.
-- The chart adds an egress NetworkPolicy (TCP 443 and DNS only), so a compromised pod cannot reach Ray ports directly.
+- The chart adds an egress NetworkPolicy that allows only TCP 443 and DNS, to any destination (ports, not hostnames), so a compromised pod cannot reach Ray's own ports directly. Do not describe it as destination-restricted.
 - **`direct`** (cluster DNS) is an opt-in that removes both layers.
 
 The threat model is in [docs/SECURITY-MODEL.md](docs/SECURITY-MODEL.md).

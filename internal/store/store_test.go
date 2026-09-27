@@ -178,3 +178,33 @@ func TestPurge(t *testing.T) {
 		t.Error("expired job kept")
 	}
 }
+
+// The same namespace and Ray cluster name in two Kubernetes clusters must never mix, and a
+// Ray cluster filter must not match names that merely share a prefix.
+func TestRayClusterFilterAcrossClusters(t *testing.T) {
+	s := open(t)
+	for _, j := range []domain.JobRecord{
+		job(func(j *domain.JobRecord) { j.ID, j.Cluster, j.RayClusterName = "east", "eks-east", "shared" }),
+		job(func(j *domain.JobRecord) { j.ID, j.Cluster, j.RayClusterName = "west", "eks-west", "shared" }),
+		job(func(j *domain.JobRecord) { j.ID, j.Cluster, j.RayClusterName = "west-2", "eks-west", "shared-2" }),
+	} {
+		must(s.Upsert(j))
+	}
+	scoped := must(s.Query(domain.JobQuery{Window: "all", Limit: 10, Cluster: "eks-west", Namespace: "team-a", RayCluster: "shared"}, now))
+	if got := ids(scoped); len(got) != 1 || got[0] != "west" {
+		t.Errorf("cluster-scoped: %v", got)
+	}
+	byName := ids(must(s.Query(domain.JobQuery{Window: "all", Limit: 10, RayCluster: "shared"}, now)))
+	if len(byName) != 2 || contains(byName, "west-2") {
+		t.Errorf("name-only filter must match exactly %q in every cluster: %v", "shared", byName)
+	}
+}
+
+func contains(list []string, v string) bool {
+	for _, x := range list {
+		if x == v {
+			return true
+		}
+	}
+	return false
+}

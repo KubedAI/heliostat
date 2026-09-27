@@ -43,8 +43,13 @@ var (
 type source struct {
 	mu        sync.Mutex
 	hasSynced func() bool
-	last      time.Time
-	err       string
+	// listedRV is the informer's last synced resource version. A watch error is cleared once it
+	// moves past the version seen at failure, so a recovered but empty resource (no events to
+	// call ok) does not report the old error forever.
+	listedRV func() string
+	failedRV string
+	last     time.Time
+	err      string
 }
 
 func (s *source) ok() {
@@ -56,12 +61,20 @@ func (s *source) ok() {
 func (s *source) fail(err error) {
 	s.mu.Lock()
 	s.err = err.Error()
+	if s.listedRV != nil {
+		s.failedRV = s.listedRV()
+	}
 	s.mu.Unlock()
 }
 
 func (s *source) status() domain.SourceHealth {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.err != "" && s.listedRV != nil {
+		if rv := s.listedRV(); rv != "" && rv != s.failedRV {
+			s.last, s.err = time.Now(), ""
+		}
+	}
 	h := domain.SourceHealth{Error: s.err}
 	if s.hasSynced != nil && s.hasSynced() {
 		h.Synced = s.err == ""
@@ -190,7 +203,7 @@ func (c *Cluster) connectAndStart(ctx context.Context) error {
 	if c.Config.RayDashboards {
 		c.poller = &SubmissionPoller{
 			cluster: c.Config.Name, transport: transport, store: c.store, onChange: c.onChange,
-			rayClusters: c.RayClusters, rayJobs: c.liveRayJobs,
+			rayClusters: c.RayClusters, rayJobs: c.liveRayJobs, inventory: c.clustersSource.status,
 			timeout: timeout, concurrency: c.collector.MaxConcurrentRequests, log: c.log.With("source", "submissions"),
 		}
 		go c.poller.Run(ctx, time.Duration(c.collector.SubmissionPollIntervalSeconds)*time.Second)
@@ -226,6 +239,7 @@ func (c *Cluster) informer(factory dynamicinformer.DynamicSharedInformerFactory,
 		c.log.Warn("watch error", "resource", gvr.Resource, "error", err)
 	})
 	src.hasSynced = inf.HasSynced
+	src.listedRV = inf.LastSyncResourceVersion
 	wrap := func(fn func(any)) func(any) {
 		return func(obj any) { src.ok(); fn(obj) }
 	}

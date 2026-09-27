@@ -284,6 +284,16 @@ func (s *Store) Query(q domain.JobQuery, now time.Time) (Page, error) {
 	if q.Kind != "" {
 		where, args = append(where, "kind = ?"), append(args, string(q.Kind))
 	}
+	if q.RayCluster != "" {
+		if q.Cluster != "" && q.Namespace != "" {
+			where, args = append(where, "ray_cluster = ?"), append(args, RayClusterKey(q.Cluster, q.Namespace, q.RayCluster))
+		} else {
+			// ray_cluster is "<cluster>/<namespace>/<name>"; names cannot contain "/", so a suffix
+			// match on "/<name>" is exact on the name.
+			escaped := strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`).Replace(q.RayCluster)
+			where, args = append(where, `ray_cluster LIKE ? ESCAPE '\'`), append(args, "%/"+escaped)
+		}
+	}
 	if q.Q != "" {
 		escaped := strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`).Replace(strings.ToLower(q.Q))
 		where, args = append(where, `search LIKE ? ESCAPE '\'`), append(args, "%"+escaped+"%")

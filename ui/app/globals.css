@@ -699,6 +699,45 @@ tbody tr:hover td.action {
   padding-left: 18px;
 }
 
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px 0;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px 3px 10px;
+  border: 1px solid var(--line);
+  background: var(--hover);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.filter-chip button {
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.filter-chip button:hover {
+  background: var(--surface);
+}
+
+.field-sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+
 .empty {
   padding: 48px 16px;
   color: var(--ink-muted);

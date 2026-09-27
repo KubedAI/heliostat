@@ -5,10 +5,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ClusterCell } from '@/components/cluster-cell';
 import { Elapsed } from '@/components/elapsed';
+import { EmptyState } from '@/components/empty-state';
 import { GpuCell } from '@/components/gpu-cell';
 import { PageHeader } from '@/components/page-header';
 import { StatusBadge } from '@/components/status-badge';
 import { formatDateTime, formatRelative, JOB_TONE } from '@/lib/client/format';
+import { useSourceStatus } from '@/lib/client/source-status';
 import { useApi } from '@/lib/client/use-api';
 import {
   TIME_WINDOWS,
@@ -59,6 +61,18 @@ export function JobsView() {
   const window = params.get('window') ?? '7d';
   const [search, setSearch] = useState(params.get('q') ?? '');
   const [cursorStack, setCursorStack] = useState<string[]>([]);
+  const rayCluster = params.get('rayCluster');
+  const sourceStatus = useSourceStatus('rayJobs');
+
+  // Page history belongs to one set of filters: start over whenever anything but the cursor changes.
+  const withoutCursor = new URLSearchParams(params);
+  withoutCursor.delete('cursor');
+  const filterKey = withoutCursor.toString();
+  const [pagedFilters, setPagedFilters] = useState(filterKey);
+  if (pagedFilters !== filterKey) {
+    setPagedFilters(filterKey);
+    setCursorStack([]);
+  }
 
   // Debounce typing into the URL.
   const urlQuery = params.get('q') ?? '';
@@ -126,6 +140,22 @@ export function JobsView() {
       )}
 
       <section className="card" aria-labelledby="jobs-table-title">
+        {rayCluster && (
+          <div className="filter-chips">
+            <span className="filter-chip">
+              Ray cluster: {params.get('namespace') ? `${params.get('namespace')}/` : ''}
+              {rayCluster}
+              {params.get('cluster') ? ` in ${params.get('cluster')}` : ''}
+              <button
+                type="button"
+                aria-label="Remove Ray cluster filter"
+                onClick={() => set({ rayCluster: undefined })}
+              >
+                ×
+              </button>
+            </span>
+          </div>
+        )}
         <div className="toolbar">
           <label className="field grow">
             <span className="field-label">Search</span>
@@ -216,8 +246,12 @@ export function JobsView() {
               {data && data.items.length === 0 && (
                 <tr>
                   <td colSpan={8} className="empty">
-                    <strong>No jobs match these filters.</strong>
-                    Jobs appear here within seconds of being created, however they were submitted.
+                    <EmptyState
+                      status={sourceStatus}
+                      source="RayJobs"
+                      empty="No jobs match these filters."
+                      hint="Jobs appear here within seconds of being created, however they were submitted."
+                    />
                   </td>
                 </tr>
               )}

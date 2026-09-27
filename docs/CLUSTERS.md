@@ -8,6 +8,9 @@ Heliostat shows Ray workloads from **exactly the Kubernetes clusters listed in i
 
 Entries are independent: one unreachable cluster never affects the others or the UI's availability. Each appears in the UI with its display name and region.
 
+> [!NOTE]
+> **Multi-cluster status:** validated end to end with a hub and one remote EKS cluster in the same account and region, in separate VPCs, over the remote cluster's public endpoint. The test covered colliding job and cluster names, dashboard links, access revocation and recovery, and the trust and RBAC scoping below. Cross-region, cross-account, private-endpoint, and on-premises setups have not been validated yet; see the [validation plan](ROADMAP.md#multi-cluster-validation). Please report what you find.
+
 ## Where configuration lives
 
 | Where Heliostat runs | Configure in | Reference |
@@ -67,8 +70,26 @@ Heliostat (the *hub*) connects with IAM, not static credentials. For each remote
 
 **Prerequisites:**
 
-- The hub can reach the remote API endpoint: a public endpoint restricted to the hub's NAT IPs, or a private endpoint over Transit Gateway or VPC peering with DNS resolution.
+- The hub can reach the remote cluster's API endpoint on TCP 443. See [Network path](#network-path) below.
 - The remote cluster uses the `API` or `API_AND_CONFIG_MAP` authentication mode (for access entries).
+
+### Network path
+
+Running inside EKS does not by itself give the hub a route to another cluster's API server. Three things decide it: how the endpoint hostname resolves, whether there is a route, and the remote cluster's security group. Heliostat connects to whatever address `DescribeCluster` returns, so no Heliostat setting changes the path.
+
+| Setup | Endpoint resolves to | What you need |
+|---|---|---|
+| Same VPC | Private IPs (EKS associates a private hosted zone with the VPC) | An inbound rule on the remote **cluster security group**: TCP 443 from the hub's node security group (or the hub's pod CIDR, with custom networking). By default that group only trusts itself. |
+| Peered VPCs or Transit Gateway, remote endpoint **private only** | Private IPs, from any VPC | Routes both ways, plus the same security group rule, sourced from the hub VPC's CIDR. |
+| Peered VPCs or Transit Gateway, remote endpoint **public and private** | **Public IPs** from outside the remote VPC | Traffic leaves through the hub's NAT gateway, not the peering. Include the hub's NAT IPs in the remote `publicAccessCidrs`, or the connection fails. To keep it private, disable public access on the remote endpoint. |
+| No private connectivity (for example, overlapping CIDRs) | Public IPs | Public access restricted to the hub's NAT IPs in `publicAccessCidrs`. The connection is TLS with the cluster CA and a short-lived IAM token, but the endpoint is reachable from those IPs over the internet. |
+
+To see what the hub resolves, run a lookup from a short-lived pod in the hub:
+
+```bash
+kubectl -n heliostat run dns-check --rm -i --restart=Never \
+  --image=public.ecr.aws/docker/library/busybox:1.36 -- nslookup <endpoint-hostname>
+```
 
 ### 1. Hub account: Pod Identity role
 
@@ -95,7 +116,7 @@ aws eks create-pod-identity-association --cluster-name <hub-cluster> \
 
 ### 2. Remote account: reader role
 
-The trust policy allows only the hub role:
+The trust policy allows only the hub role, and only when the session comes from Heliostat's service account in the hub cluster. EKS Pod Identity attaches these session tags, and they carry over when the hub role assumes this one:
 
 ```json
 {
@@ -104,11 +125,20 @@ The trust policy allows only the hub role:
     {
       "Effect": "Allow",
       "Principal": { "AWS": "arn:aws:iam::<hub-account>:role/heliostat-hub" },
-      "Action": ["sts:AssumeRole", "sts:TagSession"]
+      "Action": ["sts:AssumeRole", "sts:TagSession"],
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalTag/eks-cluster-name": "<hub-cluster>",
+          "aws:PrincipalTag/kubernetes-namespace": "heliostat",
+          "aws:PrincipalTag/kubernetes-service-account": "heliostat-heliostat"
+        }
+      }
     }
   ]
 }
 ```
+
+Without the condition, any workload that can use the hub role can read the remote cluster. Adjust the namespace and service account if you changed the release name or namespace. With IRSA instead of Pod Identity these tags do not exist; drop the condition and rely on the hub role's own trust policy.
 
 The permission policy:
 
@@ -136,7 +166,12 @@ aws eks create-access-entry --cluster-name <remote-cluster> \
 kubectl --context <remote> apply -f deploy/remote-cluster/rbac.yaml
 ```
 
-[deploy/remote-cluster/rbac.yaml](../deploy/remote-cluster/rbac.yaml) grants `get`, `list`, and `watch` on KubeRay resources and `get` on `services/proxy`, nothing else.
+[deploy/remote-cluster/rbac.yaml](../deploy/remote-cluster/rbac.yaml) grants two things, nothing else:
+
+- `get`, `list`, and `watch` on KubeRay resources, cluster-wide, because Heliostat watches every namespace.
+- `get` on `services/proxy` **only in the namespaces you bind**. The file binds `raydata` as an example; copy its RoleBinding for each namespace that runs Ray clusters, and for the History Server's namespace if the remote cluster has one. `services/proxy` reaches any Service in its scope, so a cluster-wide binding would let the reader `GET` unrelated internal services too.
+
+Dashboard links for Ray clusters in a namespace you did not bind return `403`.
 
 ### 4. Add the entry
 

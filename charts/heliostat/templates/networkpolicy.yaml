@@ -27,7 +27,8 @@ spec:
         {{- end }}
       {{- end }}
   egress:
-    # Kubernetes API servers (local and remote) and AWS APIs (STS, EKS) only.
+    # TCP 443 to any destination: Kubernetes API servers and AWS APIs (STS, EKS) need it, and a
+    # standard NetworkPolicy cannot restrict by hostname. Ray's own ports stay blocked.
     - ports:
         {{- range .Values.networkPolicy.egressPorts }}
         - protocol: TCP

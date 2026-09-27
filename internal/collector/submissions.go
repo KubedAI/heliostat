@@ -38,6 +38,9 @@ type SubmissionPoller struct {
 	onChange    func()
 	rayClusters func() []domain.RayClusterRecord
 	rayJobs     func() []domain.JobRecord
+	// inventory reports the health of the RayCluster informer that rayClusters reads from. While it
+	// is not synced, an empty target list means "unknown", not "nothing to poll".
+	inventory   func() domain.SourceHealth
 	timeout     time.Duration
 	concurrency int
 	log         *slog.Logger
@@ -120,6 +123,16 @@ func (p *SubmissionPoller) Tick(ctx context.Context) {
 	now := time.Now().UTC().Format(time.RFC3339)
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	if p.inventory != nil {
+		if inv := p.inventory(); !inv.Synced {
+			reason := inv.Error
+			if reason == "" {
+				reason = "not synced yet"
+			}
+			p.health = domain.SourceHealth{LastSuccessAt: p.health.LastSuccessAt, Error: "RayCluster inventory unavailable: " + reason}
+			return
+		}
+	}
 	if len(failures) == 0 {
 		p.health = domain.SourceHealth{Synced: true, LastSuccessAt: now}
 		return

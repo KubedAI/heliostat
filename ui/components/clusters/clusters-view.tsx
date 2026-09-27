@@ -5,7 +5,9 @@ import { PageHeader } from '@/components/page-header';
 import { GpuCell } from '@/components/gpu-cell';
 import { StatusBadge } from '@/components/status-badge';
 import { clusterStateTone, formatDateTime, formatRelative } from '@/lib/client/format';
+import { useSourceStatus } from '@/lib/client/source-status';
 import { useApi } from '@/lib/client/use-api';
+import { EmptyState } from '@/components/empty-state';
 import type { ListResponse, RayClusterView } from '@/lib/domain/types';
 import { ClusterCell } from '@/components/cluster-cell';
 
@@ -15,7 +17,8 @@ function ownerLabel(cluster: RayClusterView) {
 }
 
 export function ClustersView() {
-  const { data, error, loading } = useApi<ListResponse<RayClusterView>>('/api/clusters');
+  const sourceStatus = useSourceStatus('rayClusters');
+  const { data, error } = useApi<ListResponse<RayClusterView>>('/api/clusters');
   const items = [...(data?.items ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   return (
@@ -83,7 +86,12 @@ export function ClustersView() {
                   <td className="numeric">
                     {cluster.activeJobs ? (
                       <Link
-                        href={`/jobs?q=${encodeURIComponent(cluster.name)}&namespace=${encodeURIComponent(cluster.namespace)}`}
+                        href={`/jobs?${new URLSearchParams({
+                          cluster: cluster.cluster,
+                          namespace: cluster.namespace,
+                          rayCluster: cluster.name,
+                          window: 'all',
+                        })}`}
                       >
                         {cluster.activeJobs}
                       </Link>
@@ -120,7 +128,15 @@ export function ClustersView() {
               {items.length === 0 && (
                 <tr>
                   <td colSpan={9} className="empty">
-                    {loading ? 'Loading clusters…' : <strong>No Ray clusters are running.</strong>}
+                    {data ? (
+                      <EmptyState
+                        status={sourceStatus}
+                        source="RayClusters"
+                        empty="No Ray clusters are running."
+                      />
+                    ) : (
+                      'Loading clusters…'
+                    )}
                   </td>
                 </tr>
               )}

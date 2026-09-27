@@ -255,10 +255,13 @@ type JobQuery struct {
 	Status    JobStatus
 	Cluster   string
 	Namespace string
-	Kind      JobKind
-	Window    TimeWindow
-	Cursor    string
-	Limit     int
+	// RayCluster matches jobs of one Ray cluster by exact name. Combine with Cluster and
+	// Namespace to identify it uniquely; the same name can exist in several places.
+	RayCluster string
+	Kind       JobKind
+	Window     TimeWindow
+	Cursor     string
+	Limit      int
 }
 
 // Facets summarize the filtered job list.

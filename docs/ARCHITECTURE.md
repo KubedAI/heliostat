@@ -83,7 +83,7 @@ The Ray History Server's dashboard picks an archived session from cookies set by
 
 ### Reaching services through the API server
 
-By default every call to a Ray head or the History Server goes through the Kubernetes API server's service proxy, even inside Heliostat's own cluster. Heliostat's identity has only `get` on `services/proxy`, so the API server refuses any `POST`, `PUT`, or `DELETE`: a compromised Heliostat cannot submit or stop Ray jobs. The chart's egress NetworkPolicy then limits the pod to TCP 443 and DNS, closing the direct network path to Ray's unauthenticated ports. The same path works for remote clusters, since it needs only the API server to be reachable, not pod networks. `serviceTransport: direct` trades these guarantees for lower latency and is opt-in.
+By default every call to a Ray head or the History Server goes through the Kubernetes API server's service proxy, even inside Heliostat's own cluster. Heliostat's identity has only `get` on `services/proxy`, so the API server refuses any `POST`, `PUT`, or `DELETE`: a compromised Heliostat cannot submit or stop Ray jobs. The chart's egress NetworkPolicy then limits the pod to TCP 443 and DNS (to any destination, since a standard NetworkPolicy restricts ports, not hostnames), closing the direct network path to Ray's unauthenticated ports. The same path works for remote clusters, since it needs only the API server to be reachable, not pod networks. `serviceTransport: direct` trades these guarantees for lower latency and is opt-in.
 
 ### Durability without an operator
 

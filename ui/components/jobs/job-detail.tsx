@@ -14,9 +14,16 @@ import {
   JOB_TONE,
 } from '@/lib/client/format';
 import { useApi } from '@/lib/client/use-api';
-import { isTerminal, type JobView } from '@/lib/domain/types';
+import { isTerminal, type HealthView, type JobView } from '@/lib/domain/types';
 import { jobLinkPath } from '@/lib/links';
 import { DiagnosticsLink } from './diagnostics-link';
+
+/** Display name and region of a configured Kubernetes cluster, falling back to its stable name. */
+function clusterLabel(name: string, health?: HealthView): string {
+  const info = health?.clusters.find((c) => c.name === name);
+  if (!info) return name;
+  return info.region ? `${info.displayName} (${info.region})` : info.displayName;
+}
 
 const SOURCE_LABEL: Record<JobView['kind'], string> = {
   RayJob: 'RayJob custom resource',
@@ -46,6 +53,7 @@ export function JobDetail({ id }: { id: string }) {
     error,
     loading,
   } = useApi<JobView>(`/api/jobs/${encodeURIComponent(id)}`, 5_000);
+  const { data: health } = useApi<HealthView>('/api/health', 60_000);
 
   if (!job) {
     return (
@@ -71,7 +79,7 @@ export function JobDetail({ id }: { id: string }) {
         <Link href="/jobs">← Jobs</Link>
       </nav>
       <PageHeader
-        eyebrow={`${job.cluster} / ${job.namespace}`}
+        eyebrow={`${clusterLabel(job.cluster, health)} / ${job.namespace}`}
         title={job.name}
         lede={
           <>
@@ -93,6 +101,10 @@ export function JobDetail({ id }: { id: string }) {
       <section className="card">
         <dl className="detail-grid">
           <Field label="Source">{SOURCE_LABEL[job.kind]}</Field>
+          <Field label="K8s cluster">
+            {clusterLabel(job.cluster, health)}
+            <span className="field-sub mono">{job.cluster}</span>
+          </Field>
           <Field label="Model">{job.model}</Field>
           <Field label="Owner">{job.owner}</Field>
           <Field label="Workload type">{job.workloadType}</Field>

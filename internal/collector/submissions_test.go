@@ -119,3 +119,20 @@ func TestPartialFailure(t *testing.T) {
 		t.Errorf("health: %+v", h)
 	}
 }
+
+func TestInventoryUnavailableIsNotHealthy(t *testing.T) {
+	p, _, _ := poller(t, fakeHeads{}, nil, nil)
+	p.inventory = func() domain.SourceHealth {
+		return domain.SourceHealth{Error: "failed to list ray.io/v1, Resource=rayclusters: Unauthorized"}
+	}
+	p.Tick(context.Background())
+	if h := p.Status(); h.Synced || h.LastSuccessAt != "" || !strings.Contains(h.Error, "Unauthorized") {
+		t.Errorf("no targets because the inventory failed must not read as healthy: %+v", h)
+	}
+
+	p.inventory = func() domain.SourceHealth { return domain.SourceHealth{Synced: true} }
+	p.Tick(context.Background())
+	if h := p.Status(); !h.Synced || h.LastSuccessAt == "" {
+		t.Errorf("recovered inventory: %+v", h)
+	}
+}
