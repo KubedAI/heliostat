@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/b3eac7d9-4dab-4f35-abe0-4af32aeec29b
 - **Jobs**: every `RayJob`, plus every job submitted straight to a Ray cluster with `ray job submit`, the Jobs SDK, or a notebook. Covers training, batch inference, online inference, and data processing, with status, failure reason, runtime, and GPUs.
 - **Deep links**: each job opens its live **Ray Dashboard** while its cluster runs, then its **Ray History Server** archive after the cluster is deleted.
 - **Clusters and endpoints**: every live `RayCluster` and `RayService`, labelled with the Kubernetes cluster and region they run in.
-- **Many clusters**: Amazon EKS clusters in any region or AWS account, and on-premises Kubernetes, all from one install.
+- **Many clusters**: Amazon EKS clusters in any region or AWS account, and on-premises Kubernetes, all from one install. Implemented; validated so far with two EKS clusters in one account and region (see [Add clusters](#add-clusters)).
 - **Read-only by construction**: Heliostat cannot create, change, scale, or stop anything. See [Security](#security).
 
 ## How it works
@@ -98,11 +98,13 @@ Visit http://127.0.0.1:8080.
 
 Heliostat shows workloads from exactly the Kubernetes clusters listed in its `clusters` configuration (by default, just the cluster it runs in). Add Amazon EKS clusters in any region or AWS account (EKS Pod Identity, no static credentials), or on-premises clusters through a mounted kubeconfig Secret. The configuration holds no credentials.
 
+Multi-cluster support is validated end to end with a hub and one remote EKS cluster in the same account and region. Cross-region, cross-account, and private-endpoint validation is next on the roadmap.
+
 **→ [docs/CLUSTERS.md](docs/CLUSTERS.md)**
 
 ## Security
 
-Heliostat is read-only by construction: even a compromised Heliostat cannot submit, stop, or scale Ray work. Kubernetes RBAC, a get-only API server proxy, and an egress NetworkPolicy each enforce this independently, and it was attack-tested on a live cluster. The egress layer needs a CNI that enforces NetworkPolicy.
+Heliostat is read-only by construction: even a compromised Heliostat cannot submit, stop, or scale Ray work through Kubernetes or through its dashboard proxy. Kubernetes RBAC and a get-only API server proxy enforce this, and it was attack-tested on a live cluster. An egress NetworkPolicy additionally blocks direct connections to Ray's own ports. It restricts ports (TCP 443 and DNS), not destinations, and needs a CNI that enforces NetworkPolicy. The security model lists the residual risks and how to close them.
 
 **→ [docs/SECURITY-MODEL.md](docs/SECURITY-MODEL.md)**. To report a vulnerability, see [SECURITY.md](SECURITY.md).
 

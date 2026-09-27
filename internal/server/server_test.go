@@ -24,7 +24,10 @@ func TestParseJobQuery(t *testing.T) {
 	if err != nil || q.Q != "gemma" || q.Status != domain.StatusFailed || q.Kind != domain.KindSubmission || q.Window != "all" || q.Limit != 10 {
 		t.Errorf("parsed: %+v %v", q, err)
 	}
-	for _, bad := range []url.Values{{"status": {"failed"}}, {"window": {"1y"}}, {"kind": {"Pod"}}, {"limit": {"0"}}, {"limit": {"500"}}, {"limit": {"abc"}}} {
+	if q, err := ParseJobQuery(url.Values{"rayCluster": {"shared-2"}}); err != nil || q.RayCluster != "shared-2" {
+		t.Errorf("rayCluster: %+v %v", q, err)
+	}
+	for _, bad := range []url.Values{{"rayCluster": {"x/../y"}}, {"rayCluster": {"UPPER"}}, {"status": {"failed"}}, {"window": {"1y"}}, {"kind": {"Pod"}}, {"limit": {"0"}}, {"limit": {"500"}}, {"limit": {"abc"}}} {
 		if _, err := ParseJobQuery(bad); err == nil {
 			t.Errorf("%v should be rejected", bad)
 		}

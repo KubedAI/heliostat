@@ -16,9 +16,19 @@
 
 ### Near term
 
+- **Collector health page:** one row per Kubernetes cluster and data source, with Connecting, Synced, Degraded, Unreachable, Disabled, and Never-synced states and last-success times.
+- **Prometheus metrics** for per-cluster sync state, API errors, poll duration, and record counts.
 - **Model catalog as its own ConfigMap**, owned by the platform team and restricted by RBAC, editable without redeploying Heliostat.
 - **Guarantee History Server coverage:** a ValidatingAdmissionPolicy that requires `historyServerOptions` (archiving to S3) on every RayJob, RayCluster, and RayService.
 - **An "archiving…" state** for the minute between a Ray cluster's deletion and its archive appearing.
+
+### Multi-cluster validation
+
+Validated so far: a hub and one remote EKS cluster in the same account and region, in separate VPCs with overlapping CIDRs, over the remote public endpoint. Covered: colliding names, cluster-scoped filters, dashboard links through the remote API server, write denial, access revocation and self-recovery, namespace-scoped `services/proxy`, and the Pod Identity session-tag trust condition. Still to do:
+
+- **Integration test:** two fake Kubernetes API servers with identical namespace, RayJob, RayCluster, and submission names. Prove that records, filters, dashboard links, and History Server sessions never cross clusters, and that one failing cluster does not affect the other.
+- **Live matrix:** another region, another account through role assumption, a remote cluster reached privately (VPC peering with a private-only endpoint, and two clusters in the same VPC). Use deliberately colliding names. Run outages and credential rotation for 60–90 minutes: EKS tokens refresh after 15 minutes and assumed-role credentials after an hour.
+- **Measure** API-server request volume and Heliostat memory with representative job counts.
 
 ### 1. Authentication and multi-tenant views
 

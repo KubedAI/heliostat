@@ -17,7 +17,12 @@ type NavItem = {
 const NAV: NavItem[] = [
   { href: '/', label: 'Overview' },
   { href: '/jobs', label: 'Jobs', count: (h) => h.counts.activeJobs, countLabel: 'active' },
-  { href: '/clusters', label: 'Clusters', count: (h) => h.counts.rayClusters, countLabel: 'live' },
+  {
+    href: '/clusters',
+    label: 'Ray clusters',
+    count: (h) => h.counts.rayClusters,
+    countLabel: 'live',
+  },
   { href: '/endpoints', label: 'Endpoints', count: (h) => h.counts.endpoints, countLabel: 'live' },
   { href: '/models', label: 'Models' },
 ];

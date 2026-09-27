@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -29,6 +30,9 @@ const (
 	defaultLimit = 50
 	maxLimit     = 200
 )
+
+// kubernetesName is a DNS-1123 subdomain, the form of Ray cluster names.
+var kubernetesName = regexp.MustCompile(`^[a-z0-9]([-a-z0-9.]{0,251}[a-z0-9])?$`)
 
 // Server routes HTTP requests.
 type Server struct {
@@ -105,6 +109,12 @@ func (s *Server) etag(body func(*http.Request) (any, error)) http.HandlerFunc {
 func ParseJobQuery(v url.Values) (domain.JobQuery, error) {
 	q := domain.JobQuery{Window: "7d", Limit: defaultLimit,
 		Cluster: v.Get("cluster"), Namespace: v.Get("namespace"), Cursor: v.Get("cursor")}
+	if s := v.Get("rayCluster"); s != "" {
+		if !kubernetesName.MatchString(s) {
+			return q, errors.New("rayCluster must be a Kubernetes object name")
+		}
+		q.RayCluster = s
+	}
 	if s := strings.TrimSpace(v.Get("q")); s != "" {
 		q.Q = s[:min(len(s), 200)]
 	}

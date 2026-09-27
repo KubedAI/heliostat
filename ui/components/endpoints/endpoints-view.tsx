@@ -4,12 +4,15 @@ import { PageHeader } from '@/components/page-header';
 import { StatusBadge } from '@/components/status-badge';
 import { ENDPOINT_TONE, formatDateTime, formatRelative } from '@/lib/client/format';
 import { GpuCell } from '@/components/gpu-cell';
+import { useSourceStatus } from '@/lib/client/source-status';
 import { useApi } from '@/lib/client/use-api';
+import { EmptyState } from '@/components/empty-state';
 import type { EndpointView, ListResponse } from '@/lib/domain/types';
 import { ClusterCell } from '@/components/cluster-cell';
 
 export function EndpointsView() {
-  const { data, error, loading } = useApi<ListResponse<EndpointView>>('/api/endpoints');
+  const sourceStatus = useSourceStatus('rayServices');
+  const { data, error } = useApi<ListResponse<EndpointView>>('/api/endpoints');
   const items = [...(data?.items ?? [])].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
@@ -109,13 +112,15 @@ export function EndpointsView() {
               {items.length === 0 && (
                 <tr>
                   <td colSpan={9} className="empty">
-                    {loading ? (
-                      'Loading endpoints…'
+                    {data ? (
+                      <EmptyState
+                        status={sourceStatus}
+                        source="RayServices"
+                        empty="No RayService endpoints."
+                        hint="RayServices appear here as soon as they are created."
+                      />
                     ) : (
-                      <>
-                        <strong>No RayService endpoints.</strong>
-                        RayServices appear here as soon as they are created.
-                      </>
+                      'Loading endpoints…'
                     )}
                   </td>
                 </tr>
